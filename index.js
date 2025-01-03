@@ -76,7 +76,7 @@ app.post('/sms', asyncHandler(async (req, res) => {
     console.log('invalid player');
     twiml.message('Invalid player');
     res.type('text/xml').send(twiml.toString());
-    res.end()
+    res.status(400).end();
   }
   console.log("Saving valid player");
   const client = await pool.connect();
@@ -90,7 +90,7 @@ app.post('/sms', asyncHandler(async (req, res) => {
     twiml.message('Error creating game' + err);
   }
   res.type('text/xml').send(twiml.toString());
-  res.end()
+  res.status(200).end()
 }));
 
 app.get('/', (req, res) => {
