@@ -71,25 +71,26 @@ const triggerDeploy = () => {
 
 app.post('/sms', asyncHandler(async (req, res) => {
   const twiml = new MessagingResponse();
-  const player = req.body.Body;
-  console.log("Request body", req.body);
-  if (!players.includes(player.toLowerCase())) {
-    console.log('invalid player');
-    twiml.message('Invalid player');
-    res.writeHead(400, { 'Content-Type': 'text/xml' });
-    res.end(twiml.toString());
-  }
-  console.log("Saving valid player");
-  const client = await pool.connect();
-  try {
-    await client.query('INSERT INTO games (name) VALUES ($1)', [player]);
-    console.log("Triggering Deploy");
-    triggerDeploy();
-    twiml.message('Game created, and deploy triggered');
-  } catch (err) {
-    console.log("Error creating the game");
-    twiml.message('Error creating game' + err);
-  }
+  // const player = req.body.Body;
+  twiml.message('Something worked');
+  // console.log("Request body", req.body);
+  // if (!players.includes(player.toLowerCase())) {
+  //   console.log('invalid player');
+  //   twiml.message('Invalid player');
+  //   res.writeHead(400, { 'Content-Type': 'text/xml' });
+  //   res.end(twiml.toString());
+  // }
+  // console.log("Saving valid player");
+  // const client = await pool.connect();
+  // try {
+  //   await client.query('INSERT INTO games (name) VALUES ($1)', [player]);
+  //   console.log("Triggering Deploy");
+  //   triggerDeploy();
+  //   twiml.message('Game created, and deploy triggered');
+  // } catch (err) {
+  //   console.log("Error creating the game");
+  //   twiml.message('Error creating game' + err);
+  // }
   res.type('text/xml').send(twiml.toString());
   res.status(200).end()
 }));
