@@ -1,17 +1,18 @@
-const { Pool } = require('pg');
+const http = require('http');
 const express = require('express');
-const bodyParser = require('body-parser');
+const { urlencoded } = require('body-parser');
+const { Pool } = require('pg');
+const asyncHandler = require('express-async-handler')
 
 const request = require("request");
 
-const { MessagingResponse } = require('twilio').twiml;
-const app = express();
-app.use(bodyParser.urlencoded({ extended: false }));
+const MessagingResponse = require('twilio').twiml.MessagingResponse;
 
-const asyncHandler = require('express-async-handler')
+const app = express();
+app.use(urlencoded({ extended: false }));
+
 
 require('dotenv').config();
-
 const port = process.env.PORT || 3000;
 
 const pool = new Pool({
@@ -39,33 +40,33 @@ const triggerDeploy = () => {
 };
 
 
-app.post('/delete-last-game', asyncHandler(async (req, res, next) => {
-  const client = await pool.connect();
-  try {
-    await client.query('DELETE FROM games WHERE date_created = (SELECT MAX(date_created) FROM games)');
-    triggerDeploy();
-    res.status(200).send('Game deleted, and deploy triggered');
-  } catch (err) {
-    res.status(500).send('Error deleting game' + err);
-  }
-}));
+// app.post('/delete-last-game', asyncHandler(async (req, res, next) => {
+//   const client = await pool.connect();
+//   try {
+//     await client.query('DELETE FROM games WHERE date_created = (SELECT MAX(date_created) FROM games)');
+//     triggerDeploy();
+//     res.status(200).send('Game deleted, and deploy triggered');
+//   } catch (err) {
+//     res.status(500).send('Error deleting game' + err);
+//   }
+// }));
 
-app.post('/new-game', asyncHandler(async (req, res, next) => {
-  const jsonData = req.body;
-  const { player } = jsonData;
-  if (!players.includes(player)) {
-    res.status(400).send('Invalid player');
-    return;
-  }
-  const client = await pool.connect();
-  try {
-    await client.query('INSERT INTO games (name) VALUES ($1)', [player]);
-    triggerDeploy();
-    res.status(200).send('Game created, and deploy triggered');
-  } catch (err) {
-    res.status(500).send('Error creating game' + err);
-  }
-}));
+// app.post('/new-game', asyncHandler(async (req, res, next) => {
+//   const jsonData = req.body;
+//   const { player } = jsonData;
+//   if (!players.includes(player)) {
+//     res.status(400).send('Invalid player');
+//     return;
+//   }
+//   const client = await pool.connect();
+//   try {
+//     await client.query('INSERT INTO games (name) VALUES ($1)', [player]);
+//     triggerDeploy();
+//     res.status(200).send('Game created, and deploy triggered');
+//   } catch (err) {
+//     res.status(500).send('Error creating game' + err);
+//   }
+// }));
 
 
 app.post('/sms', asyncHandler(async (req, res) => {
@@ -75,8 +76,8 @@ app.post('/sms', asyncHandler(async (req, res) => {
   if (!players.includes(player.toLowerCase())) {
     console.log('invalid player');
     twiml.message('Invalid player');
-    res.type('text/xml').send(twiml.toString());
-    res.status(400).end();
+    res.writeHead(400, { 'Content-Type': 'text/xml' });
+    res.end(twiml.toString());
   }
   console.log("Saving valid player");
   const client = await pool.connect();
