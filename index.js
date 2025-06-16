@@ -2,13 +2,14 @@ const express = require('express');
 const { urlencoded } = require('body-parser');
 const { Pool } = require('pg');
 const asyncHandler = require('express-async-handler')
-
 const request = require("request");
-
 const MessagingResponse = require('twilio').twiml.MessagingResponse;
+
 
 const app = express();
 app.use(urlencoded({ extended: false }));
+app.set('view engine', 'ejs');
+app.set('views', __dirname + '/views');
 
 
 require('dotenv').config();
@@ -39,20 +40,14 @@ const triggerDeploy = () => {
 };
 
 
-// app.post('/delete-last-game', asyncHandler(async (req, res, next) => {
-//   const client = await pool.connect();
-//   try {
-//     await client.query('DELETE FROM games WHERE date_created = (SELECT MAX(date_created) FROM games)');
-//     triggerDeploy();
-//     res.status(200).send('Game deleted, and deploy triggered');
-//   } catch (err) {
-//     res.status(500).send('Error deleting game' + err);
-//   }
-// }));
+app.use(express.json());
 
 app.post('/new-game', asyncHandler(async (req, res, next) => {
   const jsonData = req.body;
+  console.log("Players", players);
   const { player, spotify_link } = jsonData;
+  console.log("Player", player);
+  console.log("Spotify Link", spotify_link);
   if (!players.includes(player)) {
     res.status(400).send('Invalid player');
     return;
@@ -67,6 +62,9 @@ app.post('/new-game', asyncHandler(async (req, res, next) => {
   }
 }));
 
+app.get('/form', (req, res) => {
+  res.render('form');
+});
 
 app.get('/', (req, res) => {
   res.send('Up and running!')

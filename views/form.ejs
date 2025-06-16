@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>New Game Submission</title>
+</head>
+<body style="min-height:100vh; margin:0; display:flex; flex-direction:column; justify-content:center; align-items:center; 
+  background: linear-gradient(135deg, #b4906a 0%, #a97451 40%, #6f4e37 100%);">
+  <div style="background:#f5eee6; padding:2rem 3rem; border-radius:16px; box-shadow:0 4px 16px rgba(111, 78, 55, 0.13); display:flex; flex-direction:column; align-items:center;">
+    <h2 style="margin-bottom:1.5rem; color:#6f4e37;">Submit New Game</h2>
+    <form id="newGameForm" style="display:flex; flex-direction:column; align-items:center; gap:1rem; width:100%;">
+      <label for="player" style="color:#8d6748;">Name:</label>
+      <select id="player" name="player" required style="padding:0.5rem; width:210px; border-radius:6px; border:1px solid #c8b09c; background:#fffaf6; color:#6f4e37;">
+        <option value="">Select a player</option>
+        <option value="ebro">ebro</option>
+        <option value="laura">laura</option>
+        <option value="shani">shani</option>
+        <option value="djkast">djkast</option>
+      </select>
+      <label for="link" style="color:#8d6748;">Link:</label>
+      <input type="text" id="link" name="link" required style="padding:0.5rem; width:200px; border-radius:6px; border:1px solid #c8b09c; background:#fffaf6; color:#6f4e37;">
+      <button type="submit" style="margin-top:1rem; padding:0.5rem 1.5rem; border:none; border-radius:6px; background:#8d6748; color:#fffaf6; font-weight:bold; cursor:pointer; transition:background 0.2s;">Submit</button>
+    </form>
+    <div id="result" style="margin-top:1.5rem; color:#6f4e37;"></div>
+  </div>
+  <script>
+    document.getElementById('newGameForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const player = document.getElementById('player').value;
+      const link = document.getElementById('link').value;
+      const response = await fetch('/new-game', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ player, spotify_link: link })
+      });
+      const text = await response.text();
+      document.getElementById('result').innerText = text;
+    });
+  </script>
+</body>
+</html>
