@@ -1,4 +1,3 @@
-const http = require('http');
 const express = require('express');
 const { urlencoded } = require('body-parser');
 const { Pool } = require('pg');
@@ -51,49 +50,23 @@ const triggerDeploy = () => {
 //   }
 // }));
 
-// app.post('/new-game', asyncHandler(async (req, res, next) => {
-//   const jsonData = req.body;
-//   const { player } = jsonData;
-//   if (!players.includes(player)) {
-//     res.status(400).send('Invalid player');
-//     return;
-//   }
-//   const client = await pool.connect();
-//   try {
-//     await client.query('INSERT INTO games (name) VALUES ($1)', [player]);
-//     triggerDeploy();
-//     res.status(200).send('Game created, and deploy triggered');
-//   } catch (err) {
-//     res.status(500).send('Error creating game' + err);
-//   }
-// }));
-
-
-app.post('/sms', asyncHandler(async (req, res) => {
-  const twiml = new MessagingResponse();
-  // const player = req.body.Body;
-  twiml.message('Something worked');
-  // console.log("Request body", req.body);
-  // if (!players.includes(player.toLowerCase())) {
-  //   console.log('invalid player');
-  //   twiml.message('Invalid player');
-  //   res.writeHead(400, { 'Content-Type': 'text/xml' });
-  //   res.end(twiml.toString());
-  // }
-  // console.log("Saving valid player");
-  // const client = await pool.connect();
-  // try {
-  //   await client.query('INSERT INTO games (name) VALUES ($1)', [player]);
-  //   console.log("Triggering Deploy");
-  //   triggerDeploy();
-  //   twiml.message('Game created, and deploy triggered');
-  // } catch (err) {
-  //   console.log("Error creating the game");
-  //   twiml.message('Error creating game' + err);
-  // }
-  res.type('text/xml').send(twiml.toString());
-  res.status(200).end()
+app.post('/new-game', asyncHandler(async (req, res, next) => {
+  const jsonData = req.body;
+  const { player, spotify_link } = jsonData;
+  if (!players.includes(player)) {
+    res.status(400).send('Invalid player');
+    return;
+  }
+  const client = await pool.connect();
+  try {
+    await client.query('INSERT INTO games (name, link) VALUES ($1, $2)', [player, spotify_link]);
+    triggerDeploy();
+    res.status(200).send('Game created, and deploy triggered');
+  } catch (err) {
+    res.status(500).send('Error creating game' + err);
+  }
 }));
+
 
 app.get('/', (req, res) => {
   res.send('Up and running!')
