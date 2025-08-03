@@ -64,6 +64,11 @@ app.post('/new-game', asyncHandler(async (req, res, next) => {
     return;
   }
   const client = await pool.connect();
+  const result = await client.query('GET FROM games WHERE link = $1', [spotify_link]);
+  if (result.rows.length > 0) {
+    res.status(400).send('Game already exists');
+    return;
+  }
   try {
     await client.query('INSERT INTO games (name, link) VALUES ($1, $2)', [player, spotify_link]);
     await triggerDeploy(req, res);
