@@ -80,11 +80,11 @@ app.post('/new-game', asyncHandler(async (req, res, next) => {
   }
 }));
 
-app.get('/form', (req, res) => {
+app.get('/', (req, res) => {
   res.render('form');
 });
 
-app.get('/', (req, res) => {
+app.get('/status', (req, res) => {
   res.send('Up and running!')
 });
 
