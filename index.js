@@ -64,7 +64,7 @@ app.post('/new-game', asyncHandler(async (req, res, next) => {
     return;
   }
   const client = await pool.connect();
-  const result = await client.query('GET FROM games WHERE link = $1', [spotify_link]);
+  const result = await client.query('SELECT * FROM games WHERE link = $1', [spotify_link]);
   if (result.rows.length > 0) {
     res.status(400).send('Game already exists');
     return;
